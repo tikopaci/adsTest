@@ -23,7 +23,7 @@ fs.createReadStream(csvFilePath) //START CSV READING STREAM
                 {
                     "event_name": sha256(row[9]),
                     "event_time": unixTimestamp,
-                    "event_id": sha256(row[4]),       
+                    "event_id": row[4],       
                     "action_source": 'physical_store',    
                     "user_data": {
                         "client_user_agent": "adsamurai",
