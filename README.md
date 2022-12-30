@@ -10,7 +10,7 @@
 
 ### Fill the .env with desired pixel ID and access token from Facebook Conversion API
 
-### data.csv contains the data tu upload.
+### data.csv contains the data to upload.
 
 ### To run the app:
 
