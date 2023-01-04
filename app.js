@@ -6,7 +6,7 @@ require('dotenv').config();
 
 const csvFilePath ='./data.csv'; // FILE URL
 const access_token = process.env.ACCESS_TOKEN; 
-const pixel_id = process.env.ACCESS_TOKEN;
+const pixel_id = process.env.PIXEL_ID;
 
 fs.createReadStream(csvFilePath) //START CSV READING STREAM
     .pipe(parse({ 
@@ -17,13 +17,12 @@ fs.createReadStream(csvFilePath) //START CSV READING STREAM
         const values = parseFloat(row[11].replace(/[^0-9\.,-]+/g,"")); // PRICE WITHOUT "$, €"
         const names = row[5].split(" "); //SPLIT NAME COLUMN IN TWO
         const unixTimestamp = Math.floor(new Date(row[10]).getTime()/1000) // CHECKOUT DATE TO UNIXTIME
-
-        const dataJson = {
-            "data": [
+        const dataJson =
+            [
                 {
-                    "event_name": sha256(row[9]),
+                    "event_name": row[9],
                     "event_time": unixTimestamp,
-                    "event_id": row[4],       
+                    "event_id": sha256(row[4]),       
                     "action_source": 'physical_store',    
                     "user_data": {
                         "client_user_agent": "adsamurai",
@@ -54,10 +53,7 @@ fs.createReadStream(csvFilePath) //START CSV READING STREAM
                         "currency": "EUR",
                      }
                 }
-            ],
-            "test_event_code": "TEST123"
-        }
-        
+        ];
     
     data = JSON.stringify(dataJson); 
     console.log(data);
