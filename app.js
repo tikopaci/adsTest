@@ -20,17 +20,14 @@ fs.createReadStream(csvFilePath) //START CSV READING STREAM
 
         const dataJson = {
             "data": [
-                {
-                    "event_name": sha256(row[9]),
-                    "event_time": unixTimestamp,
-                    "event_id": sha256(row[4]),       
-                    "action_source": 'physical_store',    
-                    "user_data": {
-                        "client_user_agent": "adsamurai",
-                        "em": [
-                            sha256(row[0])
-                        ],
-                        "ph": [
+                {   
+                    "match_keys": {
+                        "email": [
+                            sha256(row[0]),
+                            sha256(row[1]),
+                            sha256(row[2])
+                        ],      
+                        "phone": [
                             sha256(row[3])
                         ],
                         "fn": [
@@ -39,7 +36,7 @@ fs.createReadStream(csvFilePath) //START CSV READING STREAM
                         "ln": [
                             sha256(names[1])
                         ],
-                        "ge": [
+                        "gen": [
                             sha256(row[8])
                         ],
                         "zp": [
@@ -47,33 +44,37 @@ fs.createReadStream(csvFilePath) //START CSV READING STREAM
                         ],
                         "country": [
                             sha256(row[7])
-                        ],
-                     },
-                     "custom_data": {
-                        "value": values,
-                        "currency": "EUR",
-                     }
+                        ]
+                    },
+                    "event_name": row[9],
+                    "value": values,
+                    "currency": "EUR",
+                    "event_time": unixTimestamp,
+                    "order_id": row[4],
+                    "custom_data": {
+                        event_source: "in_store"
+                    },
                 }
-            ],
-            "test_event_code": "TEST123"
+            ]
         }
+
+        data = JSON.stringify(dataJson); // JSON TO STRING
+        console.log(data);
+        const httpPayload =
+            "&access_token=" + access_token;
+            "&upload_tag=in store purchase";
+            "&data=" + data;
         
-    
-    data = JSON.stringify(dataJson); 
-    console.log(data);
-    const httpPayload =
-      "&data=" + data;
-    
-    // Send Offline Conversion Event
-    http = new XMLHttpRequest();
-    http.open(
-      "POST",
-      `https://graph.facebook.com/v15.0/${pixel_id}/events?access_token=${access_token}`,
-      false
-    );
-    http.send(httpPayload);
-    console.log("Offline Conversion Result: HTTP " + http.status);
-    console.log(http.responseText)
+        // Send Offline Conversion Event
+        http = new XMLHttpRequest();
+        http.open(
+        "POST",
+        `https://graph.facebook.com/v15.0/${pixel_id}/events`,
+        false
+        );
+        http.send(httpPayload);
+        console.log("Offline Conversion Result: HTTP " + http.status); // LOG HTTP STATUS
+        console.log(http.responseText) // LOG HTTP RESPONSE
     })
     .on("error", (error) => {
         console.log(error.message);
